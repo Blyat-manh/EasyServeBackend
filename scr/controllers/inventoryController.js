@@ -12,10 +12,14 @@ const getAllInventory = async (req, res) => {
 
 // Crear un nuevo artículo en el inventario
 const createInventoryItem = async (req, res) => {
-  const { name, quantity } = req.body;
+  const { name, price } = req.body;
   try {
-    const [result] = await pool.query('INSERT INTO inventory (name, quantity) VALUES (?, ?)', [name, quantity]);
-    res.json({ id: result.insertId, name, quantity });
+    if (isNaN(price)) {
+      return res.status(400).json({ error: 'El precio debe ser un número válido' });
+    }
+
+    const [result] = await pool.query('INSERT INTO inventory (name, price) VALUES (?, ?)', [name, price]);
+    res.json({ id: result.insertId, name, price });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -24,10 +28,14 @@ const createInventoryItem = async (req, res) => {
 // Actualizar un artículo del inventario
 const updateInventoryItem = async (req, res) => {
   const { id } = req.params;
-  const { name, quantity } = req.body;
+  const { name, price } = req.body;
   try {
-    await pool.query('UPDATE inventory SET name = ?, quantity = ? WHERE id = ?', [name, quantity, id]);
-    res.json({ id, name, quantity });
+    if (isNaN(price)) {
+      return res.status(400).json({ error: 'El precio debe ser un número válido' });
+    }
+
+    await pool.query('UPDATE inventory SET name = ?, price = ? WHERE id = ?', [name, price, id]);
+    res.json({ id, name, price });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

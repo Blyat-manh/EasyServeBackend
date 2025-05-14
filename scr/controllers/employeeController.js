@@ -23,12 +23,12 @@ const createEmployee = async (req, res) => {
 
     // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
-    
+
     const [result] = await pool.query(
-      'INSERT INTO users (name, password, role) VALUES (?, ?, ?)', 
+      'INSERT INTO users (name, password, role) VALUES (?, ?, ?)',
       [name, hashedPassword, role]
     );
-    
+
     res.json({ name, role, message: 'Empleado creado exitosamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -51,7 +51,7 @@ const updateEmployee = async (req, res) => {
     }
 
     const [result] = await pool.query(query, queryParams);
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Empleado no encontrado' });
     }
@@ -67,7 +67,7 @@ const deleteEmployee = async (req, res) => {
   const { name } = req.params;  // Usamos el name como identificador
   try {
     const [result] = await pool.query('DELETE FROM users WHERE name = ?', [name]);
-    
+
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Empleado no encontrado' });
     }

@@ -7,7 +7,7 @@ const inventoryRoutes = require('./routes/inventoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const cashRoutes = require('./routes/cashRoutes');
 const discountRoutes = require('./routes/discountRoutes');
-const endDayRoutes =  require('./routes/endDayRoutes');
+const DailyRevenueRoutes =  require('./routes/DailyRevenueRoutes');
 
 const app = express();
 app.use(cors());
@@ -19,6 +19,6 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/cash', cashRoutes);
 app.use('/api/discounts', discountRoutes);
-app.use('/api/endDay', endDayRoutes);
+app.use('/api/DailyRevenue', DailyRevenueRoutes);
 
 module.exports = app;

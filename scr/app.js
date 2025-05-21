@@ -5,7 +5,7 @@ const userRoutes = require('./routes/userRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-const cashRoutes = require('./routes/cashRoutes');
+//const cashRoutes = require('./routes/cashRoutes');
 const discountRoutes = require('./routes/discountRoutes');
 const dailyRevenueRoutes = require('./routes/DailyRevenueRoutes');
 
@@ -17,7 +17,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/cash', cashRoutes);
+//app.use('/api/cash', cashRoutes);
 app.use('/api/discounts', discountRoutes);
 app.use('/api/dailyRevenue', dailyRevenueRoutes);
 

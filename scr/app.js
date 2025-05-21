@@ -19,6 +19,6 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/cash', cashRoutes);
 app.use('/api/discounts', discountRoutes);
-app.use('api/endDay', endDayRoutes);
+app.use('/api/endDay', endDayRoutes);
 
 module.exports = app;

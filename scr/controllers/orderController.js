@@ -17,18 +17,19 @@ const calculateTotal = (items) => {
 
 // Crear un nuevo pedido
 const createOrder = async (req, res) => {
-  const { table_number, items } = req.body;
-  try {
-    // Calcula el total del pedido
-    const total = calculateTotal(items);
+  const { table_number, items, total, discount_rate } = req.body;
 
-    // Insertar el pedido en la base de datos
-    const [result] = await pool.query('INSERT INTO orders (table_number, items, total) VALUES (?, ?, ?)', [table_number, JSON.stringify(items), total]);
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO orders (table_number, items, total, discount_rate) VALUES (?, ?, ?, ?)',
+      [table_number, JSON.stringify(items), total, discount_rate || 0]
+    );
     res.json({ id: result.insertId, table_number, items, total });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Actualizar un pedido
 const updateOrder = async (req, res) => {
@@ -101,7 +102,6 @@ const markOrderAsPaid = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 
 module.exports = { getAllOrders, createOrder, updateOrder, deleteOrder, getOrdersByTable, markOrderAsPaid };

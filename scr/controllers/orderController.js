@@ -192,30 +192,19 @@ const getOrdersByTable = async (req, res) => {
 
 // Marcar pedido como cobrado y mover a paid_orders
 const markOrderAsPaid = async (req, res) => {
-  const { id } = req.params;
-
+  const orderId = req.params.id;
   try {
-    // Obtener el pedido original
-    const [orders] = await pool.query('SELECT * FROM orders WHERE id = ?', [id]);
-    if (orders.length === 0) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-    const order = orders[0];
+    const order = await db.query('SELECT * FROM orders WHERE id = ?', [orderId]);
 
-    // Insertar en paid_orders solo el id y fecha, no duplicamos items
-    await pool.query(
-      'INSERT INTO paid_orders (order_id) VALUES (?)',
-      [id]
-    );
+    if (!order) return res.status(404).json({ message: "Pedido no encontrado" });
 
-    // Eliminar de orders (cascade elimina order_items)
-    await pool.query('DELETE FROM orders WHERE id = ?', [id]);
+    await db.query('INSERT INTO paid_orders (...) VALUES (...)', [/* datos del pedido */]);
 
-    res.json({ message: 'Order marked as paid and moved to paid_orders' });
+    await db.query('DELETE FROM orders WHERE id = ?', [orderId]);
 
+    res.json({ message: "Pedido cobrado y movido a pedidos pagados" });
   } catch (error) {
-    console.error('Error al cobrar pedido:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "Error al cobrar pedido", error });
   }
 };
 

@@ -8,6 +8,8 @@ const orderRoutes = require('./routes/orderRoutes');
 //const cashRoutes = require('./routes/cashRoutes');
 const discountRoutes = require('./routes/discountRoutes');
 const dailyRevenueRoutes = require('./routes/DailyRevenueRoutes');
+require('dotenv').config();
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 const app = express();
 app.use(cors());

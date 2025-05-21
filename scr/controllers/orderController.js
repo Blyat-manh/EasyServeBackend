@@ -24,12 +24,12 @@ const createOrder = async (req, res) => {
     const rawTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     // Obtener todos los descuentos
-    const [discounts] = await pool.query('SELECT * FROM discounts');
+    const [DiscountRates] = await pool.query('SELECT * FROM DiscountRates');
 
     // Encontrar el mayor descuento aplicable
     let applicableDiscount = 0;
 
-    for (const discount of discounts) {
+    for (const discount of DiscountRates) {
       if (rawTotal >= discount.min_order_amount && discount.discount_rate > applicableDiscount) {
         applicableDiscount = discount.discount_rate;
       }

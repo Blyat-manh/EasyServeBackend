@@ -68,16 +68,35 @@ const getOrdersByTable = async (req, res) => {
   }
 };
 
-// Marcar pedido como cobrado
+// Marcar pedido como cobrado y mover a paid_orders
 const markOrderAsPaid = async (req, res) => {
   const { id } = req.params;
+
   try {
-    // Aquí se puede actualizar el campo total a 0 si el pedido ha sido pagado
-    await pool.query('UPDATE orders SET total = 0 WHERE id = ?', [id]);
-    res.json({ message: 'Order marked as paid' });
+    // Obtener el pedido original
+    const [orderResult] = await pool.query('SELECT * FROM orders WHERE id = ?', [id]);
+
+    if (orderResult.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    const order = orderResult[0];
+
+    // Insertar en paid_orders
+    await pool.query(
+      'INSERT INTO paid_orders (table_number, items, total, created_at) VALUES (?, ?, ?, ?)',
+      [order.table_number, order.items, order.total, order.created_at]
+    );
+
+    // Eliminar de orders
+    await pool.query('DELETE FROM orders WHERE id = ?', [id]);
+
+    res.json({ message: 'Order paid and moved to paid_orders' });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 module.exports = { getAllOrders, createOrder, updateOrder, deleteOrder, getOrdersByTable, markOrderAsPaid };

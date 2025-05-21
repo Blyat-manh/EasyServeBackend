@@ -4,22 +4,37 @@ const { getUserByUsername } = require('../models/userModel');
 require('dotenv').config();
 
 const loginUser = async (req, res) => {
-  const { username, password } = req.body;
-  const user = await getUserByUsername(username);
+  try {
+    const { username, password } = req.body;
 
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials' });
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Username and password are required' });
+    }
+
+    const user = await getUserByUsername(username);
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token, role: user.role });
+
+  } catch (error) {
+    console.error('Error during login:', error);
+    res.status(500).json({ message: 'Server error' });
   }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordValid) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-  res.json({ token, role: user.role });
 };
 
 module.exports = { loginUser };

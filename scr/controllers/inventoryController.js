@@ -12,24 +12,27 @@ const getAllInventory = async (req, res) => {
 
 // Crear un nuevo artículo en el inventario
 const createInventoryItem = async (req, res) => {
-  const { name, price, type } = req.body; // Ahora 'type' es requerido
+  const { name, price, type } = req.body;
+
   try {
-    if (isNaN(price)) {
-      return res
-        .status(400)
-        .json({ error: "El precio debe ser un número válido" });
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ error: "El nombre es obligatorio y debe ser una cadena" });
     }
 
-    // Verificar que el tipo no esté vacío
-    if (!type) {
-      return res.status(400).json({ error: "El tipo es obligatorio" });
+    if (price === undefined || isNaN(price) || price < 0) {
+      return res.status(400).json({ error: "El precio debe ser un número válido y positivo" });
+    }
+
+    if (!type || typeof type !== 'string') {
+      return res.status(400).json({ error: "El tipo es obligatorio y debe ser una cadena" });
     }
 
     const [result] = await pool.query(
       "INSERT INTO inventory (name, price, type) VALUES (?, ?, ?)",
       [name, price, type]
     );
-    res.json({ id: result.insertId, name, price, type });
+
+    res.status(201).json({ id: result.insertId, name, price, type });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -38,23 +41,30 @@ const createInventoryItem = async (req, res) => {
 // Actualizar un artículo del inventario
 const updateInventoryItem = async (req, res) => {
   const { id } = req.params;
-  const { name, price, type } = req.body; // Ahora 'type' también puede ser actualizado
+  const { name, price, type } = req.body;
+
   try {
-    if (isNaN(price)) {
-      return res
-        .status(400)
-        .json({ error: "El precio debe ser un número válido" });
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ error: "El nombre es obligatorio y debe ser una cadena" });
     }
 
-    // Verificar que el tipo no esté vacío
-    if (!type) {
-      return res.status(400).json({ error: "El tipo es obligatorio" });
+    if (price === undefined || isNaN(price) || price < 0) {
+      return res.status(400).json({ error: "El precio debe ser un número válido y positivo" });
     }
 
-    await pool.query(
+    if (!type || typeof type !== 'string') {
+      return res.status(400).json({ error: "El tipo es obligatorio y debe ser una cadena" });
+    }
+
+    const [result] = await pool.query(
       "UPDATE inventory SET name = ?, price = ?, type = ? WHERE id = ?",
       [name, price, type, id]
     );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Artículo no encontrado" });
+    }
+
     res.json({ id, name, price, type });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -64,9 +74,15 @@ const updateInventoryItem = async (req, res) => {
 // Eliminar un artículo del inventario
 const deleteInventoryItem = async (req, res) => {
   const { id } = req.params;
+
   try {
-    await pool.query("DELETE FROM inventory WHERE id = ?", [id]);
-    res.json({ message: "Item deleted" });
+    const [result] = await pool.query("DELETE FROM inventory WHERE id = ?", [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Artículo no encontrado" });
+    }
+
+    res.json({ message: "Artículo eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

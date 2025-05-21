@@ -3,7 +3,7 @@ const pool = require('../utils/db');
 const getDiscountRates = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT * FROM DiscountRates ORDER BY min_order_amount DESC'
+      'SELECT * FROM discount_rates ORDER BY min_order_amount DESC'
     );
     res.json(rows);
   } catch (error) {

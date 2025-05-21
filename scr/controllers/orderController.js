@@ -17,15 +17,43 @@ const calculateTotal = (items) => {
 
 // Crear un nuevo pedido
 const createOrder = async (req, res) => {
-  const { table_number, items, total, discount_rate } = req.body;
+  const { table_number, items } = req.body;
 
   try {
+    // Calcular total original
+    const rawTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    // Obtener todos los descuentos
+    const [discounts] = await pool.query('SELECT * FROM discounts');
+
+    // Encontrar el mayor descuento aplicable
+    let applicableDiscount = 0;
+
+    for (const discount of discounts) {
+      if (rawTotal >= discount.min_order_amount && discount.discount_rate > applicableDiscount) {
+        applicableDiscount = discount.discount_rate;
+      }
+    }
+
+    // Aplicar el descuento
+    const totalWithDiscount = parseFloat((rawTotal * (1 - applicableDiscount / 100)).toFixed(2));
+
+    // Insertar el pedido en la base de datos
     const [result] = await pool.query(
-      'INSERT INTO orders (table_number, items, total, discount_rate) VALUES (?, ?, ?, ?)',
-      [table_number, JSON.stringify(items), total, discount_rate || 0]
+      'INSERT INTO orders (table_number, items, total) VALUES (?, ?, ?)',
+      [table_number, JSON.stringify(items), totalWithDiscount]
     );
-    res.json({ id: result.insertId, table_number, items, total });
+
+    res.json({
+      id: result.insertId,
+      table_number,
+      items,
+      total: totalWithDiscount,
+      applied_discount_rate: applicableDiscount // Esto solo se devuelve, no se guarda
+    });
+
   } catch (error) {
+    console.error('Error al crear pedido:', error);
     res.status(500).json({ error: error.message });
   }
 };

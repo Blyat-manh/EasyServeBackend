@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../utils/db');
 
 // Obtener usuario por nombre
 const getUserByUsername = async (username) => {

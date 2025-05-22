@@ -52,7 +52,17 @@ const recoverPassword = async (req, res) => {
     }
 
     const user = users[0];
-    const isAnswerCorrect = await bcrypt.compare(security_answer, user.security_answer);
+    console.log("Respuesta recibida:", security_answer);
+    console.log("Respuesta almacenada:", user.security_answer);
+
+    let isAnswerCorrect = false;
+
+    try {
+      isAnswerCorrect = await bcrypt.compare(security_answer, user.security_answer);
+    } catch (err) {
+      console.error('Error comparando respuestas de seguridad:', err);
+      return res.status(500).json({ error: 'Error al verificar la respuesta de seguridad' });
+    }
 
     if (!isAnswerCorrect) {
       return res.status(401).json({ error: 'Respuesta incorrecta a la pregunta de seguridad' });
@@ -64,9 +74,11 @@ const recoverPassword = async (req, res) => {
     res.json({ message: 'Contraseña actualizada exitosamente' });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error en recoverPassword:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
 
 
 module.exports = { loginUser, recoverPassword };

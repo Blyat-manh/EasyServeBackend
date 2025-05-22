@@ -4,6 +4,7 @@ const { getUserByUsername } = require('../models/userModel');
 require('dotenv').config();
 const pool = require('../utils/db');
 
+
 const loginUser = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -79,7 +80,6 @@ const recoverPassword = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
-
 
 
 module.exports = { loginUser, recoverPassword };

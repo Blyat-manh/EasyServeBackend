@@ -13,10 +13,10 @@ const getAllEmployees = async (req, res) => {
 
 // Crear un nuevo empleado
 const createEmployee = async (req, res) => {
-  const { name, role, password } = req.body;
+  const { name, role, password, security_answer } = req.body;
 
-  if (!name || !role || !password) {
-    return res.status(400).json({ error: 'Nombre, rol y contraseña son obligatorios' });
+  if (!name || !role || !password || !security_answer) {
+    return res.status(400).json({ error: 'Todos los campos son obligatorios (nombre, rol, contraseña, respuesta)' });
   }
 
   try {
@@ -26,10 +26,11 @@ const createEmployee = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedAnswer = await bcrypt.hash(security_answer, 10);
 
     const [result] = await pool.query(
-      'INSERT INTO users (name, password, role) VALUES (?, ?, ?)',
-      [name, hashedPassword, role]
+      'INSERT INTO users (name, password, security_answer, role) VALUES (?, ?, ?, ?)',
+      [name, hashedPassword, hashedAnswer, role]
     );
 
     res.status(201).json({ id: result.insertId, name, role, message: 'Empleado creado exitosamente' });
@@ -37,6 +38,7 @@ const createEmployee = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Actualizar un empleado por nombre (aunque mejor usar id)
 const updateEmployee = async (req, res) => {

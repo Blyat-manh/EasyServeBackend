@@ -1,8 +1,14 @@
-const pool = require('../utils/db');
+const db = require('../db');
 
+// Obtener usuario por nombre
 const getUserByUsername = async (username) => {
-  const [rows] = await pool.query('SELECT * FROM users WHERE name = ?', [username]);
+  const [rows] = await db.query('SELECT * FROM users WHERE name = ?', [username]);
   return rows[0];
 };
 
-module.exports = { getUserByUsername };
+// Actualizar contraseña
+const updateUserPassword = async (username, newHashedPassword) => {
+  await db.query('UPDATE users SET password = ? WHERE name = ?', [newHashedPassword, username]);
+};
+
+module.exports = { getUserByUsername, updateUserPassword };

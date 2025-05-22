@@ -46,10 +46,13 @@ const createOrder = async (req, res) => {
 
   try {
     // Obtener id de la mesa a partir del número
-    const [tables] = await pool.query('SELECT id FROM tables WHERE table_number = ?', [table_number]);
+    const [tables] = await pool.query('SELECT id, status FROM tables WHERE table_number = ?', [table_number]);
     if (tables.length === 0) return res.status(400).json({ error: 'Mesa no encontrada' });
-    const table_id = tables[0].id;
 
+    const table = tables[0];
+    if (table.status === 'reserved') {
+      return res.status(403).json({ error: 'Esta mesa está reservada y no se pueden crear pedidos en ella.' });
+    }
     // Calcular total sin descuento
     const rawTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -222,12 +225,12 @@ const getActiveOrders = async (req, res) => {
   }
 };
 
-module.exports = { 
-  getAllOrders, 
-  createOrder, 
-  updateOrder, 
-  deleteOrder, 
-  getOrdersByTable, 
+module.exports = {
+  getAllOrders,
+  createOrder,
+  updateOrder,
+  deleteOrder,
+  getOrdersByTable,
   markOrderAsPaid,
-  getActiveOrders 
+  getActiveOrders
 };

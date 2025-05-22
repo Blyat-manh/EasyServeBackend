@@ -87,4 +87,20 @@ const deleteTable = async (req, res) => {
   }
 };
 
-module.exports = { getAllTables, createTable, updateTable, deleteTable };
+const updateTableStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!['free', 'occupied', 'reserved'].includes(status)) {
+    return res.status(400).json({ error: 'Estado inválido' });
+  }
+
+  try {
+    const [result] = await pool.query('UPDATE tables SET status = ? WHERE id = ?', [status, id]);
+    res.json({ message: 'Estado actualizado', status });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { getAllTables, createTable, updateTable, deleteTable, updateTableStatus };

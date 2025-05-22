@@ -43,31 +43,49 @@ const createEmployee = async (req, res) => {
 // Actualizar un empleado por nombre (aunque mejor usar id)
 const updateEmployee = async (req, res) => {
   const { name } = req.params;
-  const { role, password } = req.body;
+  const { role, password, security_answer } = req.body;
 
-  if (!role && !password) {
-    return res.status(400).json({ error: 'Debe proporcionar rol o contraseña para actualizar' });
+  if (!role && !password && !security_answer) {
+    return res.status(400).json({ error: 'Debe proporcionar rol, contraseña o respuesta para actualizar' });
   }
 
   try {
-    let query, queryParams;
+    // Construir dinámicamente la consulta y los parámetros
+    let fields = [];
+    let values = [];
+
+    if (role) {
+      fields.push('role = ?');
+      values.push(role);
+    }
 
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
-      query = 'UPDATE users SET role = ?, password = ? WHERE name = ?';
-      queryParams = [role, hashedPassword, name];
-    } else {
-      query = 'UPDATE users SET role = ? WHERE name = ?';
-      queryParams = [role, name];
+      fields.push('password = ?');
+      values.push(hashedPassword);
     }
 
-    const [result] = await pool.query(query, queryParams);
+    if (security_answer) {
+      const hashedAnswer = await bcrypt.hash(security_answer, 10);
+      fields.push('security_answer = ?');
+      values.push(hashedAnswer);
+    }
+
+    values.push(name); // Para el WHERE
+
+    const query = `UPDATE users SET ${fields.join(', ')} WHERE name = ?`;
+
+    const [result] = await pool.query(query, values);
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Empleado no encontrado' });
     }
 
-    res.json({ name, role, message: 'Empleado actualizado exitosamente' });
+    // Opcional: puedes devolver el usuario actualizado sin password ni respuesta cifrada
+    const [updatedUser] = await pool.query('SELECT id, name, role FROM users WHERE name = ?', [name]);
+
+    res.json({ employee: updatedUser[0], message: 'Empleado actualizado exitosamente' });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

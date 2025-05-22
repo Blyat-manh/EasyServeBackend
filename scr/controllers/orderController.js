@@ -208,11 +208,26 @@ const markOrderAsPaid = async (req, res) => {
   }
 };
 
+const getActiveOrders = async (req, res) => {
+  try {
+    const [orders] = await pool.query(`
+      SELECT id AS order_id, table_id
+      FROM orders
+    `);
+
+    res.json(orders);
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = { 
   getAllOrders, 
   createOrder, 
   updateOrder, 
   deleteOrder, 
   getOrdersByTable, 
-  markOrderAsPaid 
+  markOrderAsPaid,
+  getActiveOrders 
 };

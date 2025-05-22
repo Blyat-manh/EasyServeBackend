@@ -8,5 +8,7 @@ router.put('/:id', updateOrder);
 router.delete('/:id', deleteOrder);
 router.get('/table/:id', getOrdersByTable);
 router.post('/charge/:id', markOrderAsPaid);
+router.get('/active', getActiveOrders);
+
 
 module.exports = router;

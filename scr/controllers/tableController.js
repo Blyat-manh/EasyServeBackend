@@ -3,12 +3,13 @@ const pool = require('../utils/db');
 // Obtener todas las mesas
 const getAllTables = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT id, table_number, created_at FROM tables ORDER BY table_number');
+    const [rows] = await pool.query('SELECT id, table_number, status, created_at FROM tables ORDER BY table_number');
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Crear una nueva mesa
 const createTable = async (req, res) => {

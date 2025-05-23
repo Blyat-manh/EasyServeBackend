@@ -12,7 +12,7 @@ const getAllInventory = async (req, res) => {
 
 // Crear un nuevo artículo en el inventario
 const createInventoryItem = async (req, res) => {
-  const { name, price, type } = req.body;
+  const { name, price, type, description, image } = req.body;
 
   try {
     if (!name || typeof name !== 'string') {
@@ -27,12 +27,16 @@ const createInventoryItem = async (req, res) => {
       return res.status(400).json({ error: "El tipo es obligatorio y debe ser una cadena" });
     }
 
+    if (!description || typeof description !== 'string') {
+      return res.status(400).json({ error: "La descripción es obligatoria y debe ser una cadena" });
+    }
+
     const [result] = await pool.query(
-      "INSERT INTO inventory (name, price, type) VALUES (?, ?, ?)",
-      [name, price, type]
+      "INSERT INTO inventory (name, price, type, description, image) VALUES (?, ?, ?, ?, ?)",
+      [name, price, type, description, image || null]
     );
 
-    res.status(201).json({ id: result.insertId, name, price, type });
+    res.status(201).json({ id: result.insertId, name, price, type, description, image });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -41,7 +45,7 @@ const createInventoryItem = async (req, res) => {
 // Actualizar un artículo del inventario
 const updateInventoryItem = async (req, res) => {
   const { id } = req.params;
-  const { name, price, type } = req.body;
+  const { name, price, type, description, image } = req.body;
 
   try {
     if (!name || typeof name !== 'string') {
@@ -56,16 +60,20 @@ const updateInventoryItem = async (req, res) => {
       return res.status(400).json({ error: "El tipo es obligatorio y debe ser una cadena" });
     }
 
+    if (!description || typeof description !== 'string') {
+      return res.status(400).json({ error: "La descripción es obligatoria y debe ser una cadena" });
+    }
+
     const [result] = await pool.query(
-      "UPDATE inventory SET name = ?, price = ?, type = ? WHERE id = ?",
-      [name, price, type, id]
+      "UPDATE inventory SET name = ?, price = ?, type = ?, description = ?, image = ? WHERE id = ?",
+      [name, price, type, description, image || null, id]
     );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Artículo no encontrado" });
     }
 
-    res.json({ id, name, price, type });
+    res.json({ id, name, price, type, description, image });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

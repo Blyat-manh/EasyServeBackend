@@ -126,4 +126,4 @@ const getEmployeeById = async (req, res) => {
 };
 
 
-module.exports = { getAllEmployees, createEmployee, updateEmployee, deleteEmployee };
+module.exports = { getAllEmployees, createEmployee, updateEmployee, deleteEmployee, getEmployeeById };

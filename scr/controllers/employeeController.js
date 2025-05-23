@@ -108,4 +108,22 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
+// Obtener un solo empleado por ID
+const getEmployeeById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [rows] = await pool.query('SELECT id, name, role FROM users WHERE id = ?', [id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Empleado no encontrado' });
+    }
+
+    res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 module.exports = { getAllEmployees, createEmployee, updateEmployee, deleteEmployee };

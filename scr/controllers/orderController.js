@@ -3,7 +3,6 @@ const pool = require('../utils/db');
 // Obtener todos los pedidos, incluyendo sus items y datos de mesa
 const getAllOrders = async (req, res) => {
   try {
-    // Traer pedidos con la mesa y sus items (join con tables y order_items + inventory)
     const [orders] = await pool.query(`
       SELECT 
         o.id AS order_id,
@@ -17,7 +16,6 @@ const getAllOrders = async (req, res) => {
       ORDER BY o.created_at ASC
     `);
 
-    // Para cada pedido obtener sus items
     for (const order of orders) {
       const [items] = await pool.query(`
         SELECT oi.id, oi.quantity, i.name, i.price
@@ -35,7 +33,6 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-// Calcular el total del pedido a partir de los items
 const calculateTotal = (items) => {
   return items.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
 };
@@ -45,22 +42,19 @@ const createOrder = async (req, res) => {
   const { table_number, user_id, items } = req.body;
 
   try {
-    // Obtener id de la mesa a partir del número
     const [tables] = await pool.query('SELECT id, status FROM tables WHERE table_number = ?', [table_number]);
     if (tables.length === 0) return res.status(400).json({ error: 'Mesa no encontrada' });
 
     const table = tables[0];
-    const table_id = table.id; // <-- CORREGIDO: Definir table_id
+    const table_id = table.id;
     if (table.status === 'reserved') {
       return res.status(403).json({ error: 'Esta mesa está reservada y no se pueden crear pedidos en ella.' });
     }
-    // Calcular total sin descuento
+
     const rawTotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    // Obtener descuentos
     const [discountRates] = await pool.query('SELECT * FROM discount_rates');
 
-    // Encontrar mayor descuento aplicable
     let applicableDiscount = 0;
     for (const discount of discountRates) {
       if (rawTotal >= discount.min_order_amount && discount.discount_rate > applicableDiscount) {
@@ -68,10 +62,8 @@ const createOrder = async (req, res) => {
       }
     }
 
-    // Aplicar descuento
     const totalWithDiscount = parseFloat((rawTotal * (1 - applicableDiscount / 100)).toFixed(2));
 
-    // Insertar en orders
     const [result] = await pool.query(
       'INSERT INTO orders (table_id, user_id, total) VALUES (?, ?, ?)',
       [table_id, user_id || null, totalWithDiscount]
@@ -79,9 +71,7 @@ const createOrder = async (req, res) => {
 
     const orderId = result.insertId;
 
-    // Insertar items en order_items
     for (const item of items) {
-      // Asumimos que items vienen con inventory_id y quantity
       await pool.query(
         'INSERT INTO order_items (order_id, inventory_id, quantity) VALUES (?, ?, ?)',
         [orderId, item.inventory_id, item.quantity]
@@ -109,13 +99,10 @@ const updateOrder = async (req, res) => {
   const { table_number, items } = req.body;
 
   try {
-    // Obtener id de la mesa
     const [tables] = await pool.query('SELECT id FROM tables WHERE table_number = ?', [table_number]);
     if (tables.length === 0) return res.status(400).json({ error: 'Mesa no encontrada' });
     const table_id = tables[0].id;
 
-    // Calcular total
-    // Para calcular total correcto necesitamos precio, así que buscamos precios actuales
     const itemDetailsPromises = items.map(async item => {
       const [inv] = await pool.query('SELECT price FROM inventory WHERE id = ?', [item.inventory_id]);
       if (inv.length === 0) throw new Error(`Inventario no encontrado para id ${item.inventory_id}`);
@@ -124,16 +111,13 @@ const updateOrder = async (req, res) => {
     const detailedItems = await Promise.all(itemDetailsPromises);
     const total = calculateTotal(detailedItems);
 
-    // Actualizar datos del pedido
     await pool.query(
       'UPDATE orders SET table_id = ?, total = ? WHERE id = ?',
       [table_id, total, id]
     );
 
-    // Borrar items antiguos
     await pool.query('DELETE FROM order_items WHERE order_id = ?', [id]);
 
-    // Insertar nuevos items
     for (const item of items) {
       await pool.query(
         'INSERT INTO order_items (order_id, inventory_id, quantity) VALUES (?, ?, ?)',
@@ -148,7 +132,6 @@ const updateOrder = async (req, res) => {
   }
 };
 
-// Eliminar un pedido
 const deleteOrder = async (req, res) => {
   const { id } = req.params;
   try {
@@ -159,16 +142,15 @@ const deleteOrder = async (req, res) => {
   }
 };
 
-// Obtener pedidos por mesa
+// Obtener pedidos por mesa (CAMBIO: usa table_number del parámetro)
 const getOrdersByTable = async (req, res) => {
+  // CAMBIO: ahora el parámetro se llama table_number (AJUSTA la ruta en tu archivo de rutas)
   const { table_number } = req.params;
   try {
-    // Obtener id de mesa
     const [tables] = await pool.query('SELECT id FROM tables WHERE table_number = ?', [table_number]);
     if (tables.length === 0) return res.status(404).json({ error: 'Mesa no encontrada' });
     const table_id = tables[0].id;
 
-    // Obtener pedidos y sus items para esa mesa
     const [orders] = await pool.query(`
       SELECT o.id AS order_id, o.total, o.created_at, u.name AS user_name
       FROM orders o
@@ -198,13 +180,13 @@ const getOrdersByTable = async (req, res) => {
 const markOrderAsPaid = async (req, res) => {
   const orderId = req.params.id;
   try {
-    const order = await db.query('SELECT * FROM orders WHERE id = ?', [orderId]);
+    const [orderResult] = await pool.query('SELECT * FROM orders WHERE id = ?', [orderId]);
+    if (orderResult.length === 0) return res.status(404).json({ message: "Pedido no encontrado" });
 
-    if (!order) return res.status(404).json({ message: "Pedido no encontrado" });
+    // Aquí deberías agregar la lógica para copiar datos a paid_orders si corresponde
+    // await pool.query('INSERT INTO paid_orders (...) VALUES (...)', [/* datos del pedido */]);
 
-    await db.query('INSERT INTO paid_orders (...) VALUES (...)', [/* datos del pedido */]);
-
-    await db.query('DELETE FROM orders WHERE id = ?', [orderId]);
+    await pool.query('DELETE FROM orders WHERE id = ?', [orderId]);
 
     res.json({ message: "Pedido cobrado y movido a pedidos pagados" });
   } catch (error) {

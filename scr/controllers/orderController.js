@@ -50,6 +50,7 @@ const createOrder = async (req, res) => {
     if (tables.length === 0) return res.status(400).json({ error: 'Mesa no encontrada' });
 
     const table = tables[0];
+    const table_id = table.id; // <-- CORREGIDO: Definir table_id
     if (table.status === 'reserved') {
       return res.status(403).json({ error: 'Esta mesa está reservada y no se pueden crear pedidos en ella.' });
     }

@@ -1,0 +1,100 @@
+$ruler: 16px;
+
+.dashboard-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-bg);
+
+  .dashboard-box {
+    background: var(--color-bg);
+    box-shadow:
+      -8px -8px 24px var(--color-white),
+      8px 8px 24px var(--color-shadow),
+      0 1px 4px 0 rgba(0, 0, 0, 0.07);
+    border-radius: $ruler;
+    padding: $ruler * 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $ruler * 0.5;
+    min-width: 320px;
+    width: 100%;
+    max-width: 460px;
+    transition: background 0.3s, box-shadow 0.3s;
+
+    h1 {
+      color: var(--color-text);
+      text-shadow: 1px 1px 1px var(--color-white);
+      margin-bottom: $ruler * 1.5;
+      font-size: 2.8em;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .dashboard-btn {
+      width: 85%;
+      min-width: 240px;
+      max-width: 360px;
+      height: auto;
+      padding: 12px 16px;
+      margin: $ruler * 0.35 0;
+      border-radius: 32px;
+      font-size: 1.25em;
+      font-weight: 700;
+      border: none;
+      background: var(--color-bg);
+      color: var(--color-text);
+      cursor: pointer;
+      text-shadow: 1px 1px 0 var(--color-white);
+      box-shadow:
+        -5px -5px 20px var(--color-white),
+        5px 5px 20px var(--color-shadow),
+        inset 1px 1px 2px var(--color-shadow-inset),
+        inset -1px -1px 2px var(--color-white-inset);
+      transition: all 0.2s;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.2;
+    }
+
+
+    .dashboard-btn.red {
+      background: var(--color-red-btn);
+      color: var(--color-red-btn-text);
+      text-shadow: none;
+      box-shadow:
+        -4px -4px 12px var(--color-white),
+        4px 4px 12px var(--color-shadow);
+    }
+
+    .dashboard-btn.gray {
+      background: var(--color-gray-btn);
+      color: var(--color-gray-btn-text);
+    }
+
+    .theme-switch {
+      align-self: flex-end;
+      margin-bottom: $ruler / 2;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard-container {
+    .dashboard-box {
+      padding: $ruler;
+
+      h1 {
+        font-size: 1.7em;
+      }
+
+      .dashboard-btn {
+        min-width: 0;
+        font-size: 1em;
+        height: 48px;
+      }
+    }
+  }
+}

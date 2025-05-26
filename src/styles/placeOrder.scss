@@ -1,0 +1,130 @@
+$color-bg: #EBECF0;
+$color-shadow: #BABECC;
+$color-white: #FFF;
+$color-text: #61677C;
+$color-red: #AE1100;
+$ruler: 16px;
+
+button {
+    margin-left: $ruler; 
+  }
+
+.place-order-container {
+  background-color: $color-bg;
+  min-height: 100vh;
+  padding: $ruler * 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $ruler * 2;
+  color: $color-text;
+}
+
+.place-order-header {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $ruler;
+
+  h1 {
+    color: $color-shadow;
+    text-shadow: 1px 1px 1px $color-white;
+    margin: 0;
+    margin-right: $ruler;
+  }
+
+  button {
+    padding: $ruler / 1.2 $ruler * 1.5;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: $ruler * 2;
+    background-color: $color-bg;
+    color: $color-text;
+    cursor: pointer;
+    box-shadow: -5px -5px 15px $color-white, 5px 5px 15px $color-shadow;
+    transition: all 0.2s ease-in-out;
+ 
+
+    &:hover {
+      box-shadow: -2px -2px 5px $color-white, 2px 2px 5px $color-shadow;
+    }
+
+    &:active {
+      box-shadow: inset 1px 1px 2px $color-shadow, inset -1px -1px 2px $color-white;
+    }
+
+    margin-left: $ruler / 2; 
+  }
+}
+
+.place-order-main {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  gap: $ruler * 2;
+  justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  &.with-summary {
+    .order-selection {
+      flex: 2 1 60%;
+      max-width: none;
+    }
+    .order-summary-section {
+      flex: 1 1 40%;
+      max-width: none;
+    }
+  }
+
+  &.no-summary {
+    .order-selection {
+      flex: 1 1 100%;
+      max-width: none;
+    }
+  }
+}
+
+
+.order-selection,
+.order-summary-section {
+  background-color: $color-bg;
+  box-shadow: -4px -4px 12px $color-white, 4px 4px 12px $color-shadow;
+  border-radius: $ruler;
+  padding: $ruler * 1.2;
+
+  max-width: none;
+
+  button {
+    margin-left: $ruler; 
+  }
+
+   p, label, h2, h3, h4 {
+    margin-bottom: $ruler / 2;
+  }
+  @media (max-width: 768px) {
+    max-width: 100%;
+    margin-top: $ruler / 2;
+    display: inline-block;
+  }
+}
+
+
+.tables-orders-section {
+  width: 100%;
+  max-width: 900px;
+  background-color: $color-bg;
+  box-shadow: -4px -4px 12px $color-white, 4px 4px 12px $color-shadow;
+  border-radius: $ruler;
+  padding: $ruler;
+  margin-top: $ruler;
+
+  > * {
+    margin-top: $ruler / 2;
+  }
+}

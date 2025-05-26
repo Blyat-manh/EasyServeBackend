@@ -1,0 +1,127 @@
+:root {
+  --color-red: #AE1100;
+  --color-red-dark: #8a0c00;
+  --color-bg: #EBECF0;
+  --color-shadow: #BABECC;
+  --color-white: #FFF;
+  --color-text: #222f3e;
+  --color-shadow-inset: rgba(186, 190, 204, 0.5);
+  --color-white-inset: rgba(255,255,255,0.7);
+}
+
+body.light-theme {
+  --color-bg: #EBECF0;
+  --color-shadow: #BABECC;
+  --color-white: #FFF;
+  --color-text: #222f3e;
+  --color-shadow-inset: rgba(186, 190, 204, 0.5);
+  --color-white-inset: rgba(255,255,255,0.7);
+  --color-red-btn: var(--color-red);
+  --color-red-btn-text: #fff;
+  --color-gray-btn: var(--color-shadow);
+  --color-gray-btn-text: var(--color-bg);
+}
+
+body.dark-theme {
+  --color-bg: #232734;
+  --color-shadow: #181a20;
+  --color-white: #2d313c;
+  --color-text: #f4f4f9;
+  --color-shadow-inset: rgba(0,0,0,0.7);
+  --color-white-inset: rgba(45,49,60,0.75);
+  --color-red-btn: var(--color-red-dark);
+  --color-red-btn-text: #fff;
+  --color-gray-btn: #181a20;
+  --color-gray-btn-text: #b1b1b1;
+}
+
+/* ---------- ESTÉTICA GENERAL ---------- */
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  letter-spacing: -0.2px;
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, color 0.3s;
+}
+
+a {
+  font-weight: 500;
+  color: var(--color-red);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: var(--color-text);
+}
+
+h1, h2 {
+  color: var(--color-text);
+  text-shadow: 1px 1px 1px var(--color-white);
+}
+
+button,
+.button {
+  font-family: inherit;
+  border: none;
+  border-radius: 32px;
+  padding: 1em 2em;
+  font-size: 1em;
+  font-weight: 600;
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  text-shadow: 1px 1px 0 var(--color-white);
+  box-shadow: 
+    -5px -5px 20px var(--color-white),
+     5px  5px 20px var(--color-shadow),
+    inset 1px 1px 2px var(--color-shadow-inset),
+    inset -1px -1px 2px var(--color-white-inset);
+  transition: all 0.2s;
+}
+
+button:hover,
+.button:hover {
+  box-shadow:
+    -2px -2px 8px var(--color-white),
+     2px  2px 8px var(--color-shadow),
+    inset 1px 1px 2px var(--color-shadow-inset),
+    inset -1px -1px 2px var(--color-white-inset);
+}
+
+button:active,
+.button:active {
+  box-shadow:
+    inset 1px 1px 4px var(--color-shadow-inset),
+    inset -1.5px -1.5px 4px var(--color-white-inset);
+  outline: none;
+}
+
+input,
+.input {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: none;
+  border-radius: 16px;
+  box-shadow:
+    inset 2px 2px 5px var(--color-shadow-inset),
+    inset -5px -5px 10px var(--color-white-inset);
+  padding: 1em;
+  font-size: 1em;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+input:focus,
+.input:focus {
+  box-shadow:
+    inset 1px 1px 2px var(--color-shadow-inset),
+    inset -1px -1px 2px var(--color-white-inset);
+  outline: none;
+}

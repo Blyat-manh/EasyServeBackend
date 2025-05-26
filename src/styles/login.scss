@@ -1,0 +1,104 @@
+$ruler: 16px;
+
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  justify-content: center;
+  width: 100%;
+}
+
+.login-form {
+  background: var(--color-bg);
+  box-shadow:
+    -8px -8px 24px var(--color-white),
+     8px  8px 24px var(--color-shadow),
+    0 1px 4px 0 rgba(0,0,0,0.07);
+  border-radius: $ruler;
+  padding: $ruler * 2;
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $ruler;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.segment {
+  margin-bottom: $ruler;
+  text-align: center;
+
+  h2 {
+    color: var(--color-text);
+    text-shadow: 1px 1px 1px var(--color-white);
+    margin-bottom: $ruler / 2;
+  }
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
+  gap: $ruler;
+}
+
+label {
+  display: block;
+  margin-bottom: $ruler / 2;
+  color: var(--color-text);
+}
+
+.input,
+input {
+  width: 100%;
+  margin-bottom: $ruler / 2;
+  color: var(--color-text);
+}
+
+.password-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  position: relative;
+}
+
+.eye-btn {
+  background: none;
+  border: none;
+  padding: 0 0.5em;
+  font-size: 1.2em;
+  color: var(--color-text);
+  cursor: pointer;
+  box-shadow: none;
+  outline: none;
+  transition: color 0.2s;
+}
+
+.eye-btn:active {
+  color: var(--color-red);
+}
+
+.button {
+  width: 100%;
+  margin-bottom: $ruler / 2;
+}
+
+.button.gray {
+  background-color: var(--color-gray-btn);
+  color: var(--color-gray-btn-text);
+}
+
+.button.red {
+  background-color: var(--color-red-btn);
+  color: var(--color-red-btn-text);
+  box-shadow:
+    -4px -4px 12px var(--color-white),
+     4px  4px 12px var(--color-shadow);
+  text-shadow: none;
+}
+
+@media (max-width: 500px) {
+  .login-form {
+    padding: $ruler;
+  }
+}

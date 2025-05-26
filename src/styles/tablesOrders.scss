@@ -1,0 +1,40 @@
+@import './placeOrder.scss';
+
+.tables-orders {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: $ruler;
+
+  .table-card {
+    background-color: $color-bg;
+    box-shadow: -4px -4px 12px $color-white, 4px 4px 12px $color-shadow;
+    border-radius: $ruler;
+    padding: $ruler;
+    margin-bottom: $ruler;
+
+    h4 {
+      margin-bottom: 0.5rem;
+    }
+
+    .order {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.5rem 0;
+
+      p {
+        margin: 0;
+        margin-right: $ruler / 2;
+        flex: 1;
+        word-break: break-word;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: $ruler / 2;
+        flex-shrink: 0;
+      }
+    }
+  }
+}

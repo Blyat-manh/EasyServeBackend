@@ -4,7 +4,8 @@ const pool = require('../utils/db');
 const getAllTables = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id, table_number, status, reservation_name, reservation_phone, created_at FROM tables ORDER BY table_number'
+      `SELECT id, table_number, status, reservation_name, reservation_phone, created_at
+       FROM tables ORDER BY table_number`
     );
     res.json(rows);
   } catch (error) {
@@ -87,7 +88,7 @@ const deleteTable = async (req, res) => {
   }
 };
 
-// Actualizar estado y datos de reserva de la mesa
+// Actualizar estado de la mesa (y datos de reserva)
 const updateTableStatus = async (req, res) => {
   const { id } = req.params;
   const { status, reservation_name, reservation_phone } = req.body;
@@ -101,7 +102,9 @@ const updateTableStatus = async (req, res) => {
     const phoneToSet = status === 'free' ? null : reservation_phone || null;
 
     const [result] = await pool.query(
-      'UPDATE tables SET status = ?, reservation_name = ?, reservation_phone = ? WHERE id = ?',
+      `UPDATE tables
+       SET status = ?, reservation_name = ?, reservation_phone = ?
+       WHERE id = ?`,
       [status, nameToSet, phoneToSet, id]
     );
 
@@ -109,12 +112,7 @@ const updateTableStatus = async (req, res) => {
       return res.status(404).json({ error: 'Mesa no encontrada' });
     }
 
-    res.json({
-      message: 'Estado actualizado',
-      status,
-      reservation_name: nameToSet,
-      reservation_phone: phoneToSet,
-    });
+    res.json({ message: 'Estado actualizado', status, reservation_name: nameToSet, reservation_phone: phoneToSet });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -125,5 +123,5 @@ module.exports = {
   createTable,
   updateTable,
   deleteTable,
-  updateTableStatus,
+  updateTableStatus
 };

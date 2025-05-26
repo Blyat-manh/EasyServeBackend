@@ -3,13 +3,14 @@ const pool = require('../utils/db');
 // Obtener todas las mesas
 const getAllTables = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT id, table_number, status, reservation_name, created_at FROM tables ORDER BY table_number');
+    const [rows] = await pool.query(
+      'SELECT id, table_number, status, reservation_name, reservation_phone, created_at FROM tables ORDER BY table_number'
+    );
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Crear una nueva mesa
 const createTable = async (req, res) => {
@@ -20,7 +21,6 @@ const createTable = async (req, res) => {
   }
 
   try {
-    // Verificar si ya existe esa mesa
     const [existing] = await pool.query('SELECT * FROM tables WHERE table_number = ?', [table_number]);
     if (existing.length > 0) {
       return res.status(400).json({ error: 'El número de mesa ya existe' });
@@ -47,7 +47,6 @@ const updateTable = async (req, res) => {
   }
 
   try {
-    // Verificar si el nuevo número ya está en uso (por otra mesa)
     const [existing] = await pool.query(
       'SELECT * FROM tables WHERE table_number = ? AND id != ?',
       [table_number, id]
@@ -88,9 +87,10 @@ const deleteTable = async (req, res) => {
   }
 };
 
+// Actualizar estado y datos de reserva de la mesa
 const updateTableStatus = async (req, res) => {
   const { id } = req.params;
-  const { status, reservation_name } = req.body;
+  const { status, reservation_name, reservation_phone } = req.body;
 
   if (!['free', 'occupied', 'reserved'].includes(status)) {
     return res.status(400).json({ error: 'Estado inválido' });
@@ -98,20 +98,32 @@ const updateTableStatus = async (req, res) => {
 
   try {
     const nameToSet = status === 'free' ? null : reservation_name || null;
+    const phoneToSet = status === 'free' ? null : reservation_phone || null;
 
     const [result] = await pool.query(
-      'UPDATE tables SET status = ?, reservation_name = ? WHERE id = ?',
-      [status, nameToSet, id]
+      'UPDATE tables SET status = ?, reservation_name = ?, reservation_phone = ? WHERE id = ?',
+      [status, nameToSet, phoneToSet, id]
     );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Mesa no encontrada' });
     }
 
-    res.json({ message: 'Estado actualizado', status, reservation_name: nameToSet });
+    res.json({
+      message: 'Estado actualizado',
+      status,
+      reservation_name: nameToSet,
+      reservation_phone: phoneToSet,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-module.exports = { getAllTables, createTable, updateTable, deleteTable, updateTableStatus };
+module.exports = {
+  getAllTables,
+  createTable,
+  updateTable,
+  deleteTable,
+  updateTableStatus,
+};

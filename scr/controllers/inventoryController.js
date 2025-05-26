@@ -31,12 +31,17 @@ const createInventoryItem = async (req, res) => {
       return res.status(400).json({ error: "La descripción es obligatoria y debe ser una cadena" });
     }
 
+    // image es opcional, pero si viene debe ser string o null
+    if (image && typeof image !== 'string') {
+      return res.status(400).json({ error: "El enlace de la imagen debe ser una cadena o estar vacío" });
+    }
+
     const [result] = await pool.query(
       "INSERT INTO inventory (name, price, type, description, image) VALUES (?, ?, ?, ?, ?)",
       [name, price, type, description, image || null]
     );
 
-    res.status(201).json({ id: result.insertId, name, price, type, description, image });
+    res.status(201).json({ id: result.insertId, name, price, type, description, image: image || null });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -64,6 +69,11 @@ const updateInventoryItem = async (req, res) => {
       return res.status(400).json({ error: "La descripción es obligatoria y debe ser una cadena" });
     }
 
+    // image es opcional, pero si viene debe ser string o null
+    if (image && typeof image !== 'string') {
+      return res.status(400).json({ error: "El enlace de la imagen debe ser una cadena o estar vacío" });
+    }
+
     const [result] = await pool.query(
       "UPDATE inventory SET name = ?, price = ?, type = ?, description = ?, image = ? WHERE id = ?",
       [name, price, type, description, image || null, id]
@@ -73,7 +83,7 @@ const updateInventoryItem = async (req, res) => {
       return res.status(404).json({ error: "Artículo no encontrado" });
     }
 
-    res.json({ id, name, price, type, description, image });
+    res.json({ id, name, price, type, description, image: image || null });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

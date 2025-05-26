@@ -1,3 +1,3 @@
-# Node + Express
+# React + Vite
 
-Este proyecto es el backend de EasyServe, utiliza node con express para funcionar.
+Este proyecto utiliza react para crear el frontend de EasyServe

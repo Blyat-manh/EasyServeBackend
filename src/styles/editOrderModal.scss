@@ -1,0 +1,22 @@
+@import './placeOrder.scss';
+
+.edit-order-modal {
+  background-color: $color-bg;
+  box-shadow: -4px -4px 12px $color-white, 4px 4px 12px $color-shadow;
+  border-radius: $ruler;
+  padding: $ruler;
+  width: 90%;
+  max-width: 500px;
+  margin: auto;
+
+  .edit-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+
+    button {
+      font-size: 0.8rem;
+      margin-left: 0.3rem;
+    }
+  }
+}

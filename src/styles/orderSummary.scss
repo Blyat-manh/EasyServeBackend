@@ -1,0 +1,27 @@
+@import './placeOrder.scss';
+
+.order-summary {
+  background-color: $color-bg;
+  box-shadow: -4px -4px 12px $color-white, 4px 4px 12px $color-shadow;
+  border-radius: $ruler;
+  padding: $ruler;
+  margin-bottom: $ruler;
+  width: 100%;
+  max-width: 600px;
+
+  .order-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    color: $color-text;
+
+    button {
+      font-size: 0.8rem;
+    }
+  }
+
+  .totals {
+    font-weight: bold;
+    margin-top: $ruler / 2;
+  }
+}

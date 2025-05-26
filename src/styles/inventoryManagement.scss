@@ -1,0 +1,120 @@
+$color-bg: #EBECF0;
+$color-shadow: #BABECC;
+$color-white: #FFF;
+$color-text: #61677C;
+$color-red: #AE1100;
+$ruler: 16px;
+
+.inventory-management-container {
+  background-color: $color-bg;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $ruler * 2;
+
+  h1,
+  h2,
+  h3 {
+    color: $color-shadow;
+    text-shadow: 1px 1px 1px $color-white;
+    margin-bottom: $ruler;
+  }
+
+  button {
+    padding: $ruler / 1.2 $ruler * 1.5;
+    margin: 0.3rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: $ruler * 2;
+    background-color: $color-bg;
+    color: $color-text;
+    cursor: pointer;
+    box-shadow: -5px -5px 15px $color-white, 5px 5px 15px $color-shadow;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      box-shadow: -2px -2px 5px $color-white, 2px 2px 5px $color-shadow;
+    }
+
+    &:active {
+      box-shadow: inset 1px 1px 2px $color-shadow, inset -1px -1px 2px $color-white;
+    }
+
+    &:nth-child(2) {
+      color: $color-red;
+    }
+  }
+
+  .form-section {
+    background-color: $color-bg;
+    box-shadow: -4px -4px 12px $color-white, 4px 4px 12px $color-shadow;
+    border-radius: $ruler;
+    padding: $ruler * 1.5;
+    margin-bottom: $ruler * 2;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: $ruler;
+
+    input,
+    select,
+    textarea {
+      padding: $ruler / 1.2;
+      border: none;
+      border-radius: $ruler;
+      box-shadow: inset 2px 2px 5px $color-shadow, inset -5px -5px 10px $color-white;
+      width: 100%;
+      font-size: 1rem;
+      color: $color-text;
+      background-color: $color-bg;
+      box-sizing: border-box; // 👈 Asegura que padding no haga que se desborde
+
+      &:focus {
+        outline: none;
+        box-shadow: inset 1px 1px 2px $color-shadow, inset -1px -1px 2px $color-white;
+      }
+    }
+
+    textarea {
+      height: 2.8rem; // 👈 Fija altura similar a inputs
+      line-height: 1.2rem; // 👌 Asegura que el texto no se vea aplastado
+      resize: none; // 👌 Previene desbordamiento manual
+      overflow: hidden; // 👌 Previene scroll interno si hay texto largo
+    }
+  }
+
+
+  textarea {
+    min-height: 2.5rem;
+    resize: none;
+  }
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  max-width: 500px;
+
+  li {
+    background-color: $color-bg;
+    box-shadow: -3px -3px 8px $color-white, 3px 3px 8px $color-shadow;
+    padding: $ruler;
+    margin-bottom: $ruler / 2;
+    border-radius: $ruler;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    color: $color-text;
+  }
+
+  button {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+    padding: $ruler / 2 $ruler;
+  }
+}

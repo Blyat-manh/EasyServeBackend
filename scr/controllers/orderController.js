@@ -181,36 +181,31 @@ const getOrdersByTable = async (req, res) => {
 const markOrderAsPaid = async (req, res) => {
   const orderId = req.params.id;
   try {
-    // Obtener el pedido
     const [orderResult] = await pool.query('SELECT * FROM orders WHERE id = ?', [orderId]);
     if (orderResult.length === 0) return res.status(404).json({ message: "Pedido no encontrado" });
     const order = orderResult[0];
-    const date = new Date(order.created_at).toISOString().slice(0, 10);
-
-    // Insertar en paid_orders
+    // Insertar en paid_orders (paid_at se genera solo)
     await pool.query(
-      'INSERT INTO paid_orders (order_id, date, total) VALUES (?, ?, ?)',
-      [order.id, date, order.total]
+      'INSERT INTO paid_orders (order_id, total) VALUES (?, ?)',
+      [order.id, order.total]
     );
-
     // Borrar items y pedido
     await pool.query('DELETE FROM order_items WHERE order_id = ?', [orderId]);
     await pool.query('DELETE FROM orders WHERE id = ?', [orderId]);
-
     res.json({ message: "Pedido cobrado y registrado en paid_orders" });
   } catch (error) {
-    res.status(500).json({ message: "Error al cobrar pedido", error });
+    console.error('Error cobrando pedido:', error);
+    res.status(500).json({ message: "Error al cobrar pedido", error: error.message });
   }
 };
 
 // Obtener ingresos diarios de pedidos cobrados (sin cerrar día aún)
 const getDailyPaidOrders = async (req, res) => {
   try {
-    // Suma de paid_orders agrupado por día
     const [rows] = await pool.query(
-      'SELECT date, SUM(total) as total FROM paid_orders GROUP BY date ORDER BY date DESC'
+      'SELECT DATE(paid_at) as date, SUM(total) as total FROM paid_orders GROUP BY DATE(paid_at) ORDER BY date DESC'
     );
-    res.json(rows); // [{ date: '2025-06-04', total: 120.50 }, ...]
+    res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -219,29 +214,23 @@ const getDailyPaidOrders = async (req, res) => {
 // Finalizar el día: suma lo cobrado, pasa a daily_revenue y borra de paid_orders
 const endDay = async (req, res) => {
   try {
-    const date = new Date().toISOString().slice(0, 10);
-
-    // Sumar total de paid_orders de hoy
+    const today = new Date().toISOString().slice(0, 10);
     const [result] = await pool.query(
-      'SELECT SUM(total) as total FROM paid_orders WHERE date = ?', [date]
+      'SELECT SUM(total) as total FROM paid_orders WHERE DATE(paid_at) = ?', [today]
     );
     const total = result[0].total || 0;
-
     if (total === 0) {
       return res.status(400).json({ message: 'No hay pedidos cobrados para finalizar hoy' });
     }
-
     // Insertar (o actualizar) en daily_revenue
-    const [existing] = await pool.query('SELECT * FROM daily_revenue WHERE date = ?', [date]);
+    const [existing] = await pool.query('SELECT * FROM daily_revenue WHERE date = ?', [today]);
     if (existing.length > 0) {
-      await pool.query('UPDATE daily_revenue SET total = ? WHERE date = ?', [total, date]);
+      await pool.query('UPDATE daily_revenue SET total = ? WHERE date = ?', [total, today]);
     } else {
-      await pool.query('INSERT INTO daily_revenue (date, total) VALUES (?, ?)', [date, total]);
+      await pool.query('INSERT INTO daily_revenue (date, total) VALUES (?, ?)', [today, total]);
     }
-
     // Borrar paid_orders de hoy
-    await pool.query('DELETE FROM paid_orders WHERE date = ?', [date]);
-
+    await pool.query('DELETE FROM paid_orders WHERE DATE(paid_at) = ?', [today]);
     res.json({ message: 'Día finalizado. Ingresos diarios guardados y paid_orders limpiados.', total });
   } catch (error) {
     res.status(500).json({ error: error.message });

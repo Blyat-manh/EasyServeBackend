@@ -58,7 +58,7 @@ const getAllDailyRevenue = async (req, res) => {
   }
 };
 
-// NUEVO: Obtener pagos agrupados por fecha
+// Obtener pagos agrupados por fecha
 const getDailyPaidOrders = async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -73,4 +73,17 @@ const getDailyPaidOrders = async (req, res) => {
   }
 };
 
-module.exports = { endDay, getAllDailyRevenue, markOrderAsPaid, getDailyPaidOrders };
+// Obtener el total cobrado HOY en paid_orders
+const getCurrentPaidOrdersTotal = async (req, res) => {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const [rows] = await pool.query(
+      'SELECT SUM(total) as total FROM paid_orders WHERE DATE(paid_at) = ?', [today]
+    );
+    res.json({ total: rows[0].total || 0 });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { endDay, getAllDailyRevenue, markOrderAsPaid, getDailyPaidOrders, getCurrentPaidOrdersTotal };

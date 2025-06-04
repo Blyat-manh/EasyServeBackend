@@ -4,5 +4,6 @@ const router = express.Router();
 
 router.get('/', getAllDailyRevenue);
 router.post('/end-day', endDay);
+router.get('/dailyPaidOrders', getDailyPaidOrders);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const express = require('express');
-const { endDay, getAllDailyRevenue } = require('../controllers/DailyRevenueController');
+const { endDay, getAllDailyRevenue, getDailyPaidOrders } = require('../controllers/DailyRevenueController');
 const router = express.Router();
 
 router.get('/', getAllDailyRevenue);
